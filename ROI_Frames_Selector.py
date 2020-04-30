@@ -2,7 +2,7 @@
 """
 Created on Tue Apr 28 13:24:02 2020
 
-@author: anand
+@author: Anand Pallipurath
 """
 import os
 import numpy as np
@@ -16,12 +16,12 @@ class VideoBrowser:
         window = tkinter.Tk()
         self.window = window
         self.window.title("Video ROI and Frames Selector")
-        self.window.iconbitmap(os.path.join(os.getcwd(), "EIL_Logo.ico"))
         self.delay = 15 # After it is called once, the update method will be automatically called every delay milliseconds
 
         self.largefont = font.Font(family="Verdana", size=10, weight=font.BOLD)
         self.mediumfont = font.Font(family="Verdana", size=10, weight=font.BOLD, slant=font.ITALIC)
         self.specialfont = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
+        
         self.index = 0
         self.first_frame = None
         self.last_frame = None
@@ -104,11 +104,6 @@ class VideoBrowser:
             self.lastframe_button = tkinter.Button(window, text="Single Image", width=30, state = "disabled")
         self.lastframe_button['font'] = self.mediumfont
         self.lastframe_button.grid(row=3, column=2, columnspan=1)
-        
-        """self.scroller = tkinter.Scrollbar(window)
-        self.scroller.pack(side=BOTTOM, fill=X)#grid(row=2, column=0, columnspan=3)
-        self.listbox = tkinter.Listbox(window, xscrollcommand=self.scroller.set)
-        self.scroller.config(command=self.listbox.xview)"""
         
         # Button that lets the user safely close the image dataset
         self.exit_button = tkinter.Button(window, text="Continue", width=30, command= self.continue_program)

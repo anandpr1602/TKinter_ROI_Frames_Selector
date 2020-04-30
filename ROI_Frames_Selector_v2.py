@@ -11,9 +11,6 @@ import tkinter.font as font
 import imageio
 import PIL.Image, PIL.ImageTk
 
-#myvideo = "D:/OneDrive - University College London/EIL_data/X-ray_Radiography_Image_Analysis/TR_Thermal_Abuse/ESRF_2019/Run1s.mp4"
-#myvideo = "D:/OneDrive - University College London/EIL_data/X-ray_Radiography_Image_Analysis/Finegan_nail_penetration_JTES2017/Video_1/analysis/pydic/marker/Video_1_marker.avi"
-#myvideo = "D:/OneDrive - University College London/Postdoc/IMG_20191025_121720990.jpg"
 class VideoBrowser:
     def __init__(self, myvideo=None):
         window = tkinter.Tk()
@@ -383,7 +380,4 @@ class VideoBrowser:
             return (self.start_x, self.start_y, self.curX, self.curY)
        
 if __name__ == "__main__":
-    # Create a window and pass it to the Application object
-    #VideoBrowser(myvideo)
-    #VideoBrowser(myvideo).results()
     print("Done")

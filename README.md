@@ -14,8 +14,8 @@ is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for 
 `pip install Pillow` or `python -m pip install Pillow`
 
 ## ImageIO:
-`pip install imageio` or `python -m pip install imageio` \n
-*For file formats: see https://imageio.readthedocs.io/en/stable/formats.html or use `imageio.formats.show()`
+`pip install imageio` or `python -m pip install imageio`
+* For file formats: see https://imageio.readthedocs.io/en/stable/formats.html or use `imageio.formats.show()`
 
 ## Use the FFMPEG plugin to open a variety of video formats:
 `pip install imageio-ffmpeg` or

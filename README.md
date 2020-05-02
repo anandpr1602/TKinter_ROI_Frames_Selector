@@ -52,8 +52,10 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 ### Outputs:
 * For multi-frame datasets:
 
-`<my_var> = (First frame of interest, Lastframe of interest, ROI_X1, ROI_Y1, ROI_X2, ROI_Y2)`
+`<my_var> = (First frame of interest, Last frame of interest, X1, Y1, X2, Y2)`
 
 * For single-frame images:
 
-`<my_var> = (ROI_X1, ROI_Y1, ROI_X2, ROI_Y2)`
+`<my_var> = (X1, Y1, X2, Y2)`
+
+* X1, Y1, X2, Y2 are the coordinates of the ROI Rectangle.

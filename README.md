@@ -43,13 +43,13 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 * Then call the `VideoBrowser` class directly:
 
-`ROI_Frames_Selector.VideoBrowser('<path_to_my_video>')`
+`ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path_to_my_video>')`
 
 * To get the selected frames and ROIs returned to `<my_var>`:
 
-`<my_var> = ROI_Frames_Selector.VideoBrowser('<path_to_my_video>').results()`
+`<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path_to_my_video>').results()`
 
-### Outputs:
+### Output:
 * For multi-frame datasets:
 
 `<my_var> = (First frame of interest, Last frame of interest, X1, Y1, X2, Y2)`

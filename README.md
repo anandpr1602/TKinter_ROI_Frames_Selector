@@ -45,7 +45,7 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 `ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape)`
 
-* To get the selected frames and ROIs returned to `<my_var>`:
+* To get the selected frames and ROI coordinates returned to `<my_var>`:
 
 `<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape).results()`
 
@@ -56,10 +56,12 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 ### Output:
 * For multi-frame datasets:
 
-`<my_var> = (First frame of interest, Last frame of interest, X1, Y1, X2, Y2)`
+`<my_var> = (<First frame of interest>, <Last frame of interest>, <X1>, <Y1>, <X2>, <Y2>)`
 
 * For single-frame images:
 
-`<my_var> = (X1, Y1, X2, Y2)`
+`<my_var> = (<X1>, <Y1>, <X2>, <Y2>)`
 
-* If `ROI_Shape = 0`: (X1, Y1, X2, Y2) will be the coordinates of the ROI rectangle; else if `ROI_Shape = 1`: they will be the coordinates of the bounding box of the ROI circle. If ROI not chosen, they will be `None`.
+* If `ROI_Shape = 0`: `(<X1>, <Y1>, <X2>, <Y2>)` will be the coordinates of the ROI rectangle; else if `ROI_Shape = 1`: they will be the coordinates of the bounding box of the ROI circle. If ROI not chosen, they will be `None`.
+
+* `<First frame of interest>` and `<Last frame of interest>` (int), if chosen, are the indices of the frames of interest to be analysed, else they are `None`.

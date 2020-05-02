@@ -39,7 +39,7 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 ## Call the ROI_Frames_Selector.py from a different Python file:
 * In your Python file, include:
 
-`import ROI_Frames_Selector` (**NB:** the ROI_Frames_Selector.py must be in the same working directoy as your Python file.)
+`import ROI_Frames_Selector` (**NB:** the `ROI_Frames_Selector.py` and the `ROI_Frames_Selector.cfg` must be in the same working directoy as your Python file.)
 
 * Then call the `VideoBrowser` class directly:
 

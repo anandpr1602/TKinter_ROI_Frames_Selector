@@ -8,16 +8,13 @@ is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for 
 `import tkinter.Tk()` and NOT `import Tkinter.Tk()`
 
 ## Numpy:
-`pip install numpy` or
-`python -m pip install numpy`
+`pip install numpy` or `python -m pip install numpy`
 
 ## PIL:
-`pip install Pillow` or
-`python -m pip install Pillow`
+`pip install Pillow` or `python -m pip install Pillow`
 
 ## ImageIO:
-`pip install imageio` or
-`python -m pip install imageio`
+`pip install imageio` or `python -m pip install imageio` \n
 For file formats: see https://imageio.readthedocs.io/en/stable/formats.html or
 use `imageio.formats.show()`
 

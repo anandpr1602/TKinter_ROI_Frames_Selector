@@ -4,7 +4,7 @@ is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for 
 # Requirements:
 ## Tkinter:
 ### From Python 3.1 - Tkinter is included with all standard Python distribution.
-### NB: for Python 3.x use:
+### For Python 3.x use:
 `import tkinter.Tk()` and NOT `import Tkinter.Tk()`
 
 ## Numpy:
@@ -33,21 +33,27 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 # Example Usage:
 ## Run the ROI_Frames_Selector.py directly:
 * On the command line or in a Python console run:
-`ROI_Frames_Selector.py` or `python ROI_Frames_Selector.py`
+
+`python ROI_Frames_Selector.py` or `ROI_Frames_Selector.py`
 
 ## Call the ROI_Frames_Selector.py from a different Python file:
 * In your Python file, include:
-`import ROI_Frames_Selector` (Note, the ROI_Frames_Selector.py must be in the same working directoy as your Python file.)
 
-* Then call the VideoBrowser class directly:
-`ROI_Frames_Selector.VideoBrowser('<path_to_my_video>')
+`import ROI_Frames_Selector` (**NB:** the ROI_Frames_Selector.py must be in the same working directoy as your Python file.)
+
+* Then call the `VideoBrowser` class directly:
+
+`ROI_Frames_Selector.VideoBrowser('<path_to_my_video>')`
 
 * To get the selected frames and ROIs returned to `<my_var>`:
+
 `<my_var> = ROI_Frames_Selector.VideoBrowser('<path_to_my_video>').results()`
 
 ### Outputs:
 * For multi-frame datasets:
+
 `<my_var> = (First frame of interest, Lastframe of interest, ROI_X1, ROI_Y1, ROI_X2, ROI_Y2)`
 
 * For single-frame images:
+
 `<my_var> = (ROI_X1, ROI_Y1, ROI_X2, ROI_Y2)`

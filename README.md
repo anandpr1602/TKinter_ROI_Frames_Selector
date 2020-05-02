@@ -62,4 +62,4 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 `<my_var> = (X1, Y1, X2, Y2)`
 
-* If `ROI_Shape = 0`: X1, Y1, X2, Y2 are the coordinates of the ROI Rectangle; else if `ROI_Shape = 1`: they are the coordinates of the bounding_box of the circle.
+* If `ROI_Shape = 0`: (X1, Y1, X2, Y2) will be the coordinates of the ROI rectangle; else if `ROI_Shape = 1`: they will be the coordinates of the bounding box of the ROI circle. If ROI not chosen, they will be `None`.

@@ -1,7 +1,16 @@
 # ROI Frames Selector
 is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for further image inalysis on Python. 
 
-Requires Tkinter, Numpy, PIL, ImageIO. Install imageio-ffmpeg, ITK packages for opening a wide range of image datasets including movies, HDF, etc. See - https://imageio.readthedocs.io/en/stable/formats.html
+# Requirements:
+Tkinter:
+  From Python 3.1 - Tkinter is included with all standard Python distribution.
+  NB: for Python 3.x use 'import tkinter.Tk()' and NOT 'import Tkinter.Tk()'
+
+Numpy:
+'pip install numpy' or 'python -m pip install numpy'
+
+
+, Numpy, PIL, ImageIO. Install imageio-ffmpeg, ITK packages for opening a wide range of image datasets including movies, HDF, etc. See - https://imageio.readthedocs.io/en/stable/formats.html
 
 # To see the selected frames and ROIs printed on the screen
 IN: ROI_Frames_Selector.VideoBrowser(<path_to_my_video>)

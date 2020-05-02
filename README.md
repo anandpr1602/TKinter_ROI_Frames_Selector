@@ -2,28 +2,27 @@
 is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for further image inalysis on Python. 
 
 # Requirements:
-	"""Tkinter:
-		From Python 3.1 - Tkinter is included with all standard Python distribution.
-		NB: for Python 3.x use"""
-		import tkinter.Tk() """and NOT""" import Tkinter.Tk()
+## Tkinter:
+	### From Python 3.1 - Tkinter is included with all standard Python distribution.
+	### NB: for Python 3.x use:
+	'<import tkinter.Tk()>' and NOT '<import Tkinter.Tk()>'
 
-"""Numpy:"""
-pip install numpy #or
-python -m pip install numpy
+## Numpy:
+	'<pip install numpy>' or
+	'<python -m pip install numpy>'
 
-"""PIL:"""
-pip install Pillow #or
-python -m pip install Pillow
+## PIL:
+	'<pip install Pillow>' or
+	'<python -m pip install Pillow>'
 
-"""ImageIO:"""
-pip install imageio #or
-python -m pip install imageio
+## ImageIO:
+	'<pip install imageio>' or
+	'<python -m pip install imageio>'
 
-""" To open videos ImageIO needs the FFMPEG plugin:"""
-pip install imageio-ffmpeg
-
-
-
+## Use the FFMPEG plugin to open a variety of video formats:
+	'<pip install imageio-ffmpeg>' or
+	'<python -m pip install imageio-ffmpeg>'
+	
 
  Install imageio-ffmpeg, ITK packages for opening a wide range of image datasets including movies, HDF, etc. See - https://imageio.readthedocs.io/en/stable/formats.html
 

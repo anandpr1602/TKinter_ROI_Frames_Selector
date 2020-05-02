@@ -5,7 +5,7 @@ is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for 
 ## Tkinter:
 ### From Python 3.1 - Tkinter is included with all standard Python distribution.
 ### NB: for Python 3.x use:
-'<import tkinter.Tk()>' and NOT '<import Tkinter.Tk()>'
+'import tkinter.Tk()' and NOT 'import Tkinter.Tk()'
 
 ## Numpy:
 '<pip install numpy>' or

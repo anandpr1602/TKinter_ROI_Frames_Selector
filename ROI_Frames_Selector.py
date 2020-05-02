@@ -10,6 +10,17 @@ import tkinter.font as font
 import tkinter.filedialog as filedialog
 import imageio
 import PIL.Image, PIL.ImageTk
+import os
+import json
+
+#  Load the configuration file
+import configparser
+config = configparser.ConfigParser()
+config.read('TKinter_ROI_Frames_Selector.cfg')
+
+#  Load FFMPEG file extensions from settings
+FFMPEGFileExtensions = json.loads(config.get("SETTINGS", "FFMPEGFileExtensions"))
+
 
 class VideoBrowser:
     def __init__(self, window, myvideo=None):
@@ -37,10 +48,22 @@ class VideoBrowser:
         self.curY = None
         self.resize = False
         self.ROIrect = False
+
+        #  Get filename file_extension
+        self.file_extension = (os.path.splitext(myvideo)[1])
         
         self.image_set = imageio.get_reader(myvideo, mode = '?') #image_set is a reader object with the list of images. This loads the entire file onto memory.
-        self.number_frames = len(list(enumerate(self.image_set)))
-        
+
+        #  Check if the imported file is a FFMPEG or some other type
+        self.isFFMPEG = self.file_extension in FFMPEGFileExtensions
+
+        #  Calculate the number of frames in the file. count_frames() is used for videos otherwise get_length() is used.
+        #  When reading from a video, the number of available frames is hard/expensive to calculate, which is why its
+        #  set to inf by default, indicating “stream mode”. To get the number of frames before having read them all, you
+        #  can use the reader.count_frames() method.
+        #  See: https://imageio.readthedocs.io/en/stable/format_ffmpeg.html#ffmpeg
+        self.number_frames = self.image_set.count_frames() if self.isFFMPEG else self.image_set.get_length()
+
         # Create frame and photo here, only to get the aspect ratio of the photo based on which the canvas will be built.
         self.frame = self.image_set.get_data(self.index) #get_data opens each frame as an image array
         self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame), master=self.mycanvas) #convert image array into TKinter compatible image

@@ -2,9 +2,9 @@
 is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for further image inalysis on Python. 
 
 # Requirements:
-"""Tkinter:
-  From Python 3.1 - Tkinter is included with all standard Python distribution.
-  NB: for Python 3.x use""" 
+	#Tkinter:
+		#From Python 3.1 - Tkinter is included with all standard Python distribution.
+		#NB: for Python 3.x use
   import tkinter.Tk() "and NOT" import Tkinter.Tk()
 
 """Numpy:"""

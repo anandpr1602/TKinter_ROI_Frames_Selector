@@ -30,7 +30,7 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 `pip install itk` or `python -m pip install itk`
 * See https://imageio.readthedocs.io/en/stable/format_ffmpeg.html#ffmpeg
 
-# Example Usage:
+# Usage:
 ## Run the ROI_Frames_Selector.py directly:
 * On the command line or in a Python console run:
 
@@ -43,11 +43,15 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 * Then call the `VideoBrowser` class directly:
 
-`ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path_to_my_video>')`
+`ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape)`
 
 * To get the selected frames and ROIs returned to `<my_var>`:
 
-`<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path_to_my_video>').results()`
+`<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape).results()`
+
+* If `<path>` can be that of single file (image or video), or a directory. **NB:** All files in the directory will be considered as a sequence of frames of a single dataset. Remove unwanted files from that directory before opening.
+
+* `ROI_Shape` is an integer that defines the shape of the ROI to be drawn on the frames. Choose between 0 for a rectangle (default) and 1 for a circle.
 
 ### Output:
 * For multi-frame datasets:
@@ -58,4 +62,4 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 `<my_var> = (X1, Y1, X2, Y2)`
 
-* X1, Y1, X2, Y2 are the coordinates of the ROI Rectangle.
+* If `ROI_Shape = 0`: X1, Y1, X2, Y2 are the coordinates of the ROI Rectangle; else if `ROI_Shape = 1`: they are the coordinates of the bounding_box of the circle.

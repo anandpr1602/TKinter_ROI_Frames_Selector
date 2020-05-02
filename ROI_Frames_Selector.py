@@ -19,6 +19,7 @@ class VideoBrowser:
         self.window.title("UCL EIL - ROI and Frames Selector. Built by Anand Pallipurath.")
         
         self.resolution = 800 # Giving a decent resolution to resize large images to fit a screen
+        self.delay = 33 # set the delay in milliseconds to refresh the Tkinter window.
         # Create an empty canvas. This creates a separate Tkinter.Tk() object. 'highlightthickness' = 0 is important when dealing with extracting XY coordinates of images through mouse events.
         # Without highlightthickness, canvas is larger than the image --> leading to mouse picking out of bounds XY coordinates.
         self.mycanvas = tkinter.Canvas(self.window, width = self.resolution, height = self.resolution, highlightthickness=0)         
@@ -177,9 +178,9 @@ class VideoBrowser:
         self.scrrect = self.scrollcanvas.create_rectangle(int(np.round(self.index*(self.photo.width() - 75)/(self.number_frames-1))), 2, int(np.round(self.index*(self.photo.width() - 75)/(self.number_frames-1)) + 75), 18, fill='#808080', outline = '#808080', activefill = "#696969" , activeoutline = "#696969", disabledfill = "#D3D3D3", disabledoutline = "#D3D3D3", state="normal", tags="scrrect")
         self.scrollcanvas.config(scrollregion=self.scrollcanvas.bbox('scrrect'))
         self.scrollcanvas.grid(row = 2, column = 0, columnspan = 3)
-        #self.scrollcanvas.tag_bind("scrrect", "<ButtonPress-1>", self.on_button_press_rect)
         self.scrollcanvas.tag_bind("scrrect", "<B1-Motion>", self.on_move_press_rect)
-            
+        self.scrollcanvas.bind("<ButtonRelease-1>", self.on_button_release_rect)
+        
     def firstframe(self):
         self.first_frame = self.index
         self.firstframe_button.grid_forget()
@@ -268,20 +269,6 @@ class VideoBrowser:
     def on_button_release(self, event3):
         self.myROI_button.grid_forget()
         self.update_ROI()
-    
-    def on_button_press_rect(self, event3):
-        # move scrollbar once if clicked.
-        self.scr_x = event3.x
-        if self.scr_x < 0:
-            self.scr_x = 0
-        elif self.scr_x > self.photo.width() - 75:
-            self.scr_x = self.photo.width() - 75
-        self.scrollcanvas.coords(self.scrrect, int(np.round(self.index*(self.scr_x)/(self.number_frames-1))), 2, int(np.round(self.index*(self.scr_x)/(self.number_frames-1))+75), 18)
-        self.index = int(np.round(self.scr_x*(self.number_frames-1)/(self.photo.width() - 75)))
-        self.update_forward()
-        self.update_backward()
-        self.update_myframe()
-        self.update_canvas()
 
     def on_move_press_rect(self, event4):
         # move scroll bar as the mouse is dragged after a click.
@@ -292,10 +279,12 @@ class VideoBrowser:
             self.curscrX = self.photo.width() - 75
         self.scrollcanvas.coords(self.scrrect, int(np.round(self.index*(self.curscrX)/(self.number_frames-1))), 2, int(np.round(self.index*(self.curscrX)/(self.number_frames-1))+75), 18)
         self.index = int(np.round(self.curscrX*(self.number_frames-1)/(self.photo.width() - 75)))
+        self.window.after(self.delay, self.update_myframe())
+        self.window.after(self.delay, self.update_canvas())
+        
+    def on_button_release_rect(self, event5):
         self.update_forward()
         self.update_backward()
-        self.update_myframe()
-        self.update_canvas()
     
     def results(self):
         if self.number_frames > 1:

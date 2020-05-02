@@ -49,7 +49,7 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 `<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape).results()`
 
-* If `<path>` can be that of single file (image or video), or a directory. **NB:** All files in the directory will be considered as a sequence of frames of a single dataset. Remove unwanted files from that directory before opening.
+* The `<path>` can be that of single file (image or video), or a directory. **NB if directory:** All files in the directory will be considered as a sequence of frames of a single dataset. Remove unwanted files from that directory before opening.
 
 * `ROI_Shape` is an integer that defines the shape of the ROI to be drawn on the frames. Choose between 0 for a rectangle (default) and 1 for a circle.
 

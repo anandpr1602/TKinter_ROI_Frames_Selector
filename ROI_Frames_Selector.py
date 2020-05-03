@@ -436,10 +436,10 @@ if __name__ == "__main__":
     root.frame1['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
     root.frame1.grid(row = 2, column = 0, columnspan = 1)
     
-    root.frame1a = tkinter.Label(root, text = "(e.g.: TIFF, JPEG, AVI, MP4, etc.)", state = "active")
+    root.frame1a = tkinter.Label(root, text = "(e.g.: TIFF, JPEG, GIF, AVI, MP4, etc.)", state = "active")
     root.frame1a.grid(row = 3, column = 0, columnspan = 1)
     
-    root.frame2 = tkinter.Button(root, text = "Open Multiple Image Files from a Sequence", command = opt2_select, state = "active")
+    root.frame2 = tkinter.Button(root, text = "Open a Folder with Image Sequence", command = opt2_select, state = "active")
     root.frame2['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
     root.frame2.grid(row = 2, column = 2, columnspan = 1)
     

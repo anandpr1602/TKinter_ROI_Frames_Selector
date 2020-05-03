@@ -43,11 +43,11 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 * Then call the `VideoBrowser` class directly:
 
-`ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape)`
+`ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape=0)`
 
 * To get the selected frames and ROI coordinates returned to `<my_var>`:
 
-`<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape).results()`
+`<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape=0).results()`
 
 * The `<path>` can be that of single file (image or video), or a directory. **NB if directory:** All files in the directory will be considered as a sequence of frames of a single dataset. Remove unwanted files from that directory before opening.
 

@@ -22,10 +22,10 @@ FFMPEGFileExtensions = ConfigParser.get("SETTINGS", "FFMPEGFileExtensions")
 ImageFileExtensions = ConfigParser.get("SETTINGS", "ImageFileExtensions")
 
 class VideoBrowser:
-    def __init__(self, window, myvideo=None, ROIshape=0):
+    def __init__(self, window, multimedia=None, ROIshape=0):
         # Create a window and build the Application objects
         self.window = window
-        self.myvideo = myvideo
+        self.multimedia = multimedia
         if int(ROIshape) != 0 and int(ROIshape) != 1:
             self.window.destroy()
             raise ValueError("ROIshape must be 0 for rectangle and 1 for circle")
@@ -56,10 +56,10 @@ class VideoBrowser:
         self.filelist = []
         
         # If a single file is selected: use the imageio.getreader() option and check for FFMPEG compatibility.
-        if os.path.isfile(myvideo) == True:
+        if os.path.isfile(multimedia) == True:
             #  Get filename file_extension
-            self.file_extension = (os.path.splitext(myvideo)[1])
-            self.image_set = imageio.get_reader(myvideo, mode = '?') #image_set is a reader object with the list of images. This loads the entire file onto memory.
+            self.file_extension = (os.path.splitext(multimedia)[1])
+            self.image_set = imageio.get_reader(multimedia, mode = '?') #image_set is a reader object with the list of images. This loads the entire file onto memory.
     
             #  Check if the imported file is a FFMPEG or some other type
             self.isFFMPEG = self.file_extension in FFMPEGFileExtensions
@@ -72,13 +72,13 @@ class VideoBrowser:
             # Create frame and photo here, only to get the aspect ratio of the photo based on which the canvas will be built.
             self.frame = self.image_set.get_data(self.index) #get_data opens each frame as an image array
 
-        elif os.path.isdir(myvideo) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
-            for file in os.listdir(myvideo):
+        elif os.path.isdir(multimedia) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
+            for file in os.listdir(multimedia):
                 self.file_extension = (os.path.splitext(file)[1])
                 #  Check if the imported file is a compatible single image
                 self.isSingleImage = self.file_extension in ImageFileExtensions
                 if self.isSingleImage == True and self.file_extension != "":
-                    self.filelist.append(os.path.join(myvideo, file))
+                    self.filelist.append(os.path.join(multimedia, file))
             if self.filelist != []:
                 self.filelist = sorted(self.filelist)
                 self.number_frames = len(self.filelist)
@@ -135,9 +135,9 @@ class VideoBrowser:
         self.window.mainloop()
 
     def update_canvas(self):
-        if os.path.isfile(self.myvideo) == True:
+        if os.path.isfile(self.multimedia) == True:
             self.frame = self.image_set.get_data(self.index) # get_data opens each frame as an image array
-        elif os.path.isdir(self.myvideo) == True:
+        elif os.path.isdir(self.multimedia) == True:
             self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
 
         # Convert image array into TKinter compatible image. master=self.mycanvas tells Tkinter to make the photo available to mycanvas and NOT the window (which is a separate Tkinter.Tk() instance)
@@ -388,7 +388,7 @@ class VideoBrowser:
         else:
             print("ROI not selected. 'None' type will be returned!")
         print()
-        if os.path.isfile(self.myvideo) == True:
+        if os.path.isfile(self.multimedia) == True:
             self.image_set.close()
         self.mycanvas.destroy()
         self.firstframe_button.destroy()

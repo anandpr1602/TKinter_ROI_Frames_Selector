@@ -43,15 +43,15 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 * Then call the `VideoBrowser` class directly:
 
-`ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape=0)`
+`ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<multimedia>', ROIshape=0)`
 
 * To get the selected frames and ROI coordinates returned to `<my_var>`:
 
-`<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<path>', ROI_Shape=0).results()`
+`<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<multimedia>', ROIshape=0).results()`
 
-* The `<path>` can be that of single file (image or video), or a directory. **NB if directory:** All files in the directory will be considered as a sequence of frames of a single dataset. Remove unwanted files from that directory before opening.
+* `<multimedia>` can be a path to a single file (image or video), or a directory. **NB if path to a directory:** All files in the directory will be considered as a sequence of frames of a single dataset. Remove unwanted files from that directory before opening.
 
-* `ROI_Shape` is an integer that defines the shape of the ROI to be drawn on the frames. Choose between 0 for a rectangle (default) and 1 for a circle.
+* `ROIshape` is an integer that defines the shape of the ROI to be drawn on the frames. Choose between 0 for a rectangle (default) and 1 for a circle.
 
 ### Output:
 * For multi-frame datasets:
@@ -62,6 +62,6 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 `<my_var> = (<X1>, <Y1>, <X2>, <Y2>)`
 
-* If `ROI_Shape = 0`: `(<X1>, <Y1>, <X2>, <Y2>)` are the coordinates of the ROI rectangle; else if `ROI_Shape = 1`: they are the coordinates of the bounding box of the ROI circle. If ROI not chosen, they will be `None`.
+* If `ROIshape = 0`: `(<X1>, <Y1>, <X2>, <Y2>)` are the coordinates of the ROI rectangle; else if `ROIshape = 1`: they are the coordinates of the bounding box of the ROI circle. If ROI not chosen, `None` is returned.
 
-* `<First frame of interest>` and `<Last frame of interest>` (int), if chosen, are the indices of the frames of interest to be analysed, else they are `None`.
+* `<First frame of interest>` and `<Last frame of interest>` (int), if chosen, are the indices of the frames of interest to be analysed, else `None` is returned.

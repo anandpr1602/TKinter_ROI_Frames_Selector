@@ -1,5 +1,5 @@
-# ROI Rectangle & Frames Selector
-is a Tkinter-based GUI to select rectangular ROI and choose a set of frames for further image inalysis on Python. 
+# ROI & Frames Selector
+is a Tkinter-based GUI to select rectangular or circular ROI and choose a set of frames for further image inalysis on Python. 
 
 # Requirements:
 ## Tkinter:

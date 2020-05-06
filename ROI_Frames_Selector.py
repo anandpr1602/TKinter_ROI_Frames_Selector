@@ -338,6 +338,7 @@ class VideoBrowser:
         self.window.after(self.delay, self.update_canvas())
         
     def on_button_release_rect(self, event5):
+        self.mycanvas.bind('<Motion>', self.motion)
         self.update_forward()
         self.update_backward()
     

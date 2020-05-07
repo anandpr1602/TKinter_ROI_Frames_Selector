@@ -7,6 +7,7 @@ Created in April 2020 for UCL EIL
 import os
 import configparser
 import numpy as np
+import skimage.util as util
 import tkinter
 import tkinter.font as font
 import tkinter.filedialog as filedialog
@@ -33,8 +34,8 @@ class VideoBrowser:
             self.ROIshape = int(ROIshape)
         self.window.title("UCL EIL - ROI and Frames Selector. Built by Anand Pallipurath.")
         
-        self.resolution = 800 # Giving a decent resolution to resize large images to fit a screen
-        self.delay = 33 # set the delay in milliseconds to refresh the Tkinter window.
+        self.resolution = 600 # Giving a decent resolution to resize large images to fit a screen
+        self.delay = 16 # set the delay in milliseconds to refresh the Tkinter window.
         # Create an empty canvas. This creates a separate Tkinter.Tk() object. 'highlightthickness' = 0 is important when dealing with extracting XY coordinates of images through mouse events.
         # Without highlightthickness, canvas is larger than the image --> leading to mouse picking out of bounds XY coordinates.
         self.mycanvas = tkinter.Canvas(self.window, width = self.resolution, height = self.resolution, highlightthickness=0)         
@@ -71,6 +72,10 @@ class VideoBrowser:
             self.number_frames = self.image_set.count_frames() if self.isFFMPEG else self.image_set.get_length()
             # Create frame and photo here, only to get the aspect ratio of the photo based on which the canvas will be built.
             self.frame = self.image_set.get_data(self.index) #get_data opens each frame as an image array
+            
+            # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
+            if self.frame.dtype == "uint16":
+                self.frame = util.img_as_ubyte(self.frame)
 
         elif os.path.isdir(multimedia) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
             for file in os.listdir(multimedia):
@@ -83,6 +88,8 @@ class VideoBrowser:
                 self.filelist = sorted(self.filelist)
                 self.number_frames = len(self.filelist)
                 self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
+                if self.frame.dtype == "uint16":
+                    self.frame = util.img_as_ubyte(self.frame)
             else:
                 self.mycanvas.destroy()
                 self.window.destroy()
@@ -91,11 +98,10 @@ class VideoBrowser:
             self.mycanvas.destroy()
             self.window.destroy()
             raise RuntimeError("Unknown OS error. File or Directory may be corrupted or non-existent, and couldn't be opened")
-        
-        self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame), master=self.mycanvas) #convert image array into TKinter compatible image
+
         # Store the original aspect ratio to rescale the dataset (i.e. High-Res images will not fit the screen otherwise)
-        self.original_height = self.photo.height() 
-        self.original_width = self.photo.width()
+        self.original_height = len(self.frame[0])
+        self.original_width = len(self.frame)
         
         self.mycanvas.grid_forget()
         self.update_canvas()
@@ -139,6 +145,10 @@ class VideoBrowser:
             self.frame = self.image_set.get_data(self.index) # get_data opens each frame as an image array
         elif os.path.isdir(self.multimedia) == True:
             self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
+
+        # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
+        if self.frame.dtype == "uint16":
+            self.frame = util.img_as_ubyte(self.frame)
 
         # Convert image array into TKinter compatible image. master=self.mycanvas tells Tkinter to make the photo available to mycanvas and NOT the window (which is a separate Tkinter.Tk() instance)
         self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame), master=self.mycanvas) 
@@ -397,57 +407,59 @@ class VideoBrowser:
         self.myROI_button.destroy()
         self.window.destroy()
 
-def opt1_select():
-    root.withdraw()
-    root.filename = filedialog.askopenfilename(title = "Select a File", filetypes = (("All Files", "*.*"),))
-    filename = root.filename
-    root.destroy()
-    if filename != "":
-        VideoBrowser(tkinter.Tk(), filename, root.roishape.get())
-    else:
-        print("No file selected.")
-
-def opt2_select():
-    root.withdraw()
-    root.filedir = filedialog.askdirectory(title = "Select a Folder", mustexist = True)
-    filedir = root.filedir + "/"
-    root.destroy()
-    if filedir != "":
-        VideoBrowser(tkinter.Tk(), filedir, root.roishape.get())
-    else:
-        print("No folder selected.")
-
+class FileSelector:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("UCL EIL - ROI and Frames Selector. Built by Anand Pallipurath.")
+        self.roishape = tkinter.IntVar()
+        
+        self.frame3 = tkinter.Radiobutton(self.root, text = "Rectangle", variable = self.roishape, value = 0)
+        self.frame3.grid(row = 1, column = 0, columnspan = 1)
+        
+        self.frame4 = tkinter.Radiobutton(self.root, text = "Circle", variable = self.roishape, value = 1)
+        self.frame4.grid(row = 1, column = 2, columnspan = 1)
+        
+        self.frame3a = tkinter.Label(self.root, text = "Specify the shape of the ROI", state = "active")
+        self.frame3a['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
+        self.frame3a.grid(row = 0, column = 1, columnspan = 1)
+        
+        self.frame1 = tkinter.Button(self.root, text = "Open Single Multimedia File", command = self.opt1_select, state = "active")
+        self.frame1['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
+        self.frame1.grid(row = 2, column = 0, columnspan = 1)
+        
+        self.frame1a = tkinter.Label(self.root, text = "(e.g.: TIFF, JPEG, GIF, AVI, MP4, etc.)", state = "active")
+        self.frame1a.grid(row = 3, column = 0, columnspan = 1)
+        
+        self.frame2 = tkinter.Button(self.root, text = "Open a Folder with Image Sequence", command = self.opt2_select, state = "active")
+        self.frame2['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
+        self.frame2.grid(row = 2, column = 2, columnspan = 1)
+        
+        self.frame2a = tkinter.Label(self.root, text = "(e.g.: A Sequence of TIFF files in a Folder)", state = "active")
+        self.frame2a.grid(row = 3, column = 2, columnspan = 1)
+        
+        self.frame4 = tkinter.Button(self.root, text = "CANCEL", command = self.root.destroy, state = "active")
+        self.frame4['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
+        self.frame4.grid(row = 4, column = 1, columnspan = 1)
+        self.root.mainloop()
+    
+    def opt1_select(self):
+        self.root.withdraw()
+        self.filename = filedialog.askopenfilename(title = "Select a File", filetypes = (("All Files", "*.*"),))
+        self.root.destroy()
+        if self.filename != "":
+            VideoBrowser(tkinter.Tk(), self.filename, self.roishape.get())
+        else:
+            print("No file selected.")
+    
+    def opt2_select(self):
+        self.root.withdraw()
+        self.filedir = filedialog.askdirectory(title = "Select a Folder", mustexist = True)
+        self.root.destroy()
+        if self.filedir != "":
+            VideoBrowser(tkinter.Tk(), self.filedir+"/", self.roishape.get())
+        else:
+            print("No folder selected.")
+    
 #Code starts here                       
 if __name__ == "__main__":  
-    root = tkinter.Tk()
-    root.title("UCL EIL - ROI and Frames Selector. Built by Anand Pallipurath.")
-    root.roishape = tkinter.IntVar()
-    
-    root.frame3 = tkinter.Radiobutton(root, text = "Rectangle", variable = root.roishape, value = 0)
-    root.frame3.grid(row = 1, column = 0, columnspan = 1)
-    
-    root.frame4 = tkinter.Radiobutton(root, text = "Circle", variable = root.roishape, value = 1)
-    root.frame4.grid(row = 1, column = 2, columnspan = 1)
-    
-    root.frame3a = tkinter.Label(root, text = "Specify the shape of the ROI", state = "active")
-    root.frame3a['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
-    root.frame3a.grid(row = 0, column = 1, columnspan = 1)
-    
-    root.frame1 = tkinter.Button(root, text = "Open Single Multimedia File", command = opt1_select, state = "active")
-    root.frame1['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
-    root.frame1.grid(row = 2, column = 0, columnspan = 1)
-    
-    root.frame1a = tkinter.Label(root, text = "(e.g.: TIFF, JPEG, GIF, AVI, MP4, etc.)", state = "active")
-    root.frame1a.grid(row = 3, column = 0, columnspan = 1)
-    
-    root.frame2 = tkinter.Button(root, text = "Open a Folder with Image Sequence", command = opt2_select, state = "active")
-    root.frame2['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
-    root.frame2.grid(row = 2, column = 2, columnspan = 1)
-    
-    root.frame2a = tkinter.Label(root, text = "(e.g.: A Sequence of TIFF files in a Folder)", state = "active")
-    root.frame2a.grid(row = 3, column = 2, columnspan = 1)
-    
-    root.frame4 = tkinter.Button(root, text = "CANCEL", command = root.destroy, state = "active")
-    root.frame4['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
-    root.frame4.grid(row = 4, column = 1, columnspan = 1)
-    root.mainloop()
+    FileSelector(tkinter.Tk())

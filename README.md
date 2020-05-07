@@ -1,6 +1,8 @@
 # ROI & Frames Selector
 is a Tkinter-based GUI that loads a variety of multimedia files (or a directory with individual image) and lets the user select a rectangular or a circular region of interest (ROI) and choose the frames of interest for further image inalysis on Python. 
 
+* **NB: This version can open 16-bit images, but this will be downscaled to 8-bit to be PIL-compatible. This is however, slow in the current version.**
+
 # Requirements:
 ## Tkinter:
 ### From Python 3.1 - Tkinter is included with all standard Python distribution.
@@ -12,6 +14,9 @@ is a Tkinter-based GUI that loads a variety of multimedia files (or a directory 
 
 ## PIL:
 `pip install Pillow` or `python -m pip install Pillow`
+
+## Scikit-Image:
+`pip install scikit-image` or `python -m pip install scikit-image`
 
 ## ImageIO:
 `pip install imageio` or `python -m pip install imageio`

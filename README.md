@@ -44,15 +44,27 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 ## Call the ROI_Frames_Selector.py from a different Python file:
 * In your Python file, include:
 
-`import ROI_Frames_Selector` (**NB:** the `ROI_Frames_Selector.py` and the `ROI_Frames_Selector.cfg` must be in the same working directory as your Python file.)
+`import ROI_Frames_Selector` and `import tkinter` (**NB:** the `ROI_Frames_Selector.py` and the `ROI_Frames_Selector.cfg` must be in the same working directory as your Python file.)
 
-* Then call the `VideoBrowser` class directly:
+### 1. If the path to the `<multimedia>` file/folder is already known:
+
+* Call the `VideoBrowser` class directly:
 
 `ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<multimedia>', ROIshape=0)`
 
-* To get the selected frames and ROI coordinates returned to `<my_var>`:
+* To get the selected frames of interest and ROI coordinates returned to `<my_var>`:
 
 `<my_var> = ROI_Frames_Selector.VideoBrowser(tkinter.Tk(), '<multimedia>', ROIshape=0).results()`
+
+### 2. To select a `<multimedia>` file/folder using a file dialog box:
+
+* Call the `FileSelector` class:
+
+`ROI_Frames_Selector.FileSelector(tkinter.Tk())`
+
+* To get the selected frames of interest and ROI coordinates returned to `<my_var>`:
+
+`<my_var> = ROI_Frames_Selector.VideoBrowser.results` **NB: `VideoBrowser.results` can be called only after initialising the `VideoBrowser` class. This line should be used after calling the `FileSelector` which invokes `VideoBrowser`**
 
 * `<multimedia>` can be a path to a single file (image or video), or a directory. **NB if path to a directory:** All files in the directory will be considered as a sequence of frames of a single dataset. Remove unwanted files from that directory before opening.
 

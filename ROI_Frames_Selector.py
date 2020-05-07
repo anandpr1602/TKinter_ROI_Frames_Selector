@@ -447,19 +447,28 @@ class FileSelector:
         self.filename = filedialog.askopenfilename(title = "Select a File", filetypes = (("All Files", "*.*"),))
         self.root.destroy()
         if self.filename != "":
-            VideoBrowser(tkinter.Tk(), self.filename, self.roishape.get())
+            self.callvideobrowser()
         else:
             print("No file selected.")
     
     def opt2_select(self):
         self.root.withdraw()
-        self.filedir = filedialog.askdirectory(title = "Select a Folder", mustexist = True)
+        self.filename = filedialog.askdirectory(title = "Select a Folder", mustexist = True)
         self.root.destroy()
-        if self.filedir != "":
-            VideoBrowser(tkinter.Tk(), self.filedir+"/", self.roishape.get())
+        if self.filename != "":
+            self.callvideobrowser()
         else:
             print("No folder selected.")
     
+    def callvideobrowser(self):
+        if os.path.isfile(self.filename):
+            self.myresults = VideoBrowser(tkinter.Tk(), self.filename, self.roishape.get()).results()
+        elif os.path.isdir(self.filename):
+            self.myresults = VideoBrowser(tkinter.Tk(), self.filename+"/", self.roishape.get()).results()  
+    
+    def results(self):
+        return self.myresults
+
 #Code starts here                       
 if __name__ == "__main__":  
     FileSelector(tkinter.Tk())

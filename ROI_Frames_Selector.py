@@ -4,7 +4,7 @@ Created in April 2020 for UCL EIL
 
 @author: Anand Pallipurath
 """
-import os
+import os, re
 import configparser
 import numpy as np
 import skimage.util as util
@@ -75,7 +75,7 @@ class VideoBrowser:
             
             # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
             if self.frame.dtype == "uint16":
-                self.frame = util.img_as_ubyte(self.frame) 
+                self.frame = util.img_as_ubyte(self.frame)
 
         elif os.path.isdir(multimedia) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
             for file in os.listdir(multimedia):
@@ -85,7 +85,7 @@ class VideoBrowser:
                 if self.isSingleImage == True and self.file_extension != "":
                     self.filelist.append(os.path.join(multimedia, file))
             if self.filelist != []:
-                self.filelist = sorted(self.filelist)
+                self.filelist = self.sorted_alphanumeric(self.filelist)
                 self.number_frames = len(self.filelist)
                 self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
                 if self.frame.dtype == "uint16":
@@ -141,7 +141,12 @@ class VideoBrowser:
         self.exit_button['font'] = self.specialfont
         self.exit_button.grid(row=4, column=1, columnspan=1)
         self.window.mainloop()
-
+    
+    def sorted_alphanumeric(self, data):
+        convert = lambda text: int(text) if text.isdigit() else text.lower()
+        alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
+        return sorted(data, key=alphanum_key)
+    
     def update_canvas(self):
         self.mycanvas.grid_forget()
         if os.path.isfile(self.multimedia) == True:

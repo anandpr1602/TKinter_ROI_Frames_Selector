@@ -75,7 +75,7 @@ class VideoBrowser:
             
             # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
             if self.frame.dtype == "uint16":
-                self.frame = util.img_as_ubyte(self.frame)
+                self.frame = util.img_as_ubyte(self.frame) 
 
         elif os.path.isdir(multimedia) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
             for file in os.listdir(multimedia):

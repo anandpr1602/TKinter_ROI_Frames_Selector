@@ -33,7 +33,7 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 
 ## Use the ITK plugin to open a variety of image formats such as .HDF5, .HDR, .NHDR, etc.:
 `pip install itk` or `python -m pip install itk`
-* See https://imageio.readthedocs.io/en/stable/format_ffmpeg.html#ffmpeg
+* See https://imageio.readthedocs.io/en/stable/format_itk.html#itk
 
 # Usage:
 ## Run the ROI_Frames_Selector.py directly:

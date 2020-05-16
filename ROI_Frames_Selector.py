@@ -25,15 +25,16 @@ ImageFileExtensions = ConfigParser.get("SETTINGS", "ImageFileExtensions")
 class VideoBrowser:
     def __init__(self, window, multimedia=None, ROIshape=0):
         # Create a window and build the Application objects
+        self.haserror = False
         self.window = window
         self.multimedia = multimedia
         if int(ROIshape) != 0 and int(ROIshape) != 1:
             self.window.destroy()
+            self.haserror = True
             raise ValueError("ROIshape must be 0 for rectangle and 1 for circle")
         else:
             self.ROIshape = int(ROIshape)
         self.window.title("UCL EIL - ROI and Frames Selector. Built by Anand Pallipurath.")
-        
         self.resolution = 800 # Giving a decent resolution to resize large images to fit a screen
         self.delay = 16 # set the delay in milliseconds to refresh the Tkinter window.
         # Create an empty canvas. This creates a separate Tkinter.Tk() object. 'highlightthickness' = 0 is important when dealing with extracting XY coordinates of images through mouse events.
@@ -93,10 +94,12 @@ class VideoBrowser:
             else:
                 self.mycanvas.destroy()
                 self.window.destroy()
+                self.haserror = True
                 raise FileNotFoundError("No suitable single-frame images found in the folder.")
         else:
             self.mycanvas.destroy()
             self.window.destroy()
+            self.haserror = True
             raise RuntimeError("Unknown OS error. File or Directory may be corrupted or non-existent, and couldn't be opened")
 
         # Store the original aspect ratio to rescale the dataset (i.e. High-Res images will not fit the screen otherwise)
@@ -140,8 +143,14 @@ class VideoBrowser:
         self.exit_button = tkinter.Button(self.window, text="Continue", width=30, command= self.continue_program)
         self.exit_button['font'] = self.specialfont
         self.exit_button.grid(row=4, column=1, columnspan=1)
+        self.window.protocol("WM_DELETE_WINDOW", self.onclosingwindow)
         self.window.mainloop()
     
+    def onclosingwindow(self):
+        self.window.destroy()
+        self.haserror = True
+        raise RuntimeError ("Window closed during selection.")
+        
     def sorted_alphanumeric(self, data):
         convert = lambda text: int(text) if text.isdigit() else text.lower()
         alphanum_key = lambda key: [ convert(c) for c in re.split('([0-9]+)', key) ] 
@@ -340,9 +349,9 @@ class VideoBrowser:
     
     def results(self):
         if self.number_frames > 1:
-            return (self.first_frame, self.last_frame, self.start_x, self.start_y, self.curX, self.curY)
+            return (self.first_frame, self.last_frame, self.start_x, self.start_y, self.curX, self.curY, self.haserror)
         else:
-            return (self.start_x, self.start_y, self.curX, self.curY)
+            return (self.start_x, self.start_y, self.curX, self.curY, self.haserror)
     
     def continue_program(self):
         if self.number_frames > 1:
@@ -426,7 +435,12 @@ class FileSelector:
         self.frame4 = tkinter.Button(self.root, text = "CANCEL", command = self.root.destroy, state = "active")
         self.frame4['font'] = font.Font(family="Helvetica", size=10, weight=font.BOLD, slant=font.ITALIC)
         self.frame4.grid(row = 4, column = 1, columnspan = 1)
+        self.root.protocol("WM_DELETE_WINDOW", self.onclosingroot)
         self.root.mainloop()
+    
+    def onclosingroot(self):
+        self.root.destroy()
+        raise RuntimeError ("Window closed during selection.")
     
     def opt1_select(self):
         self.root.withdraw()

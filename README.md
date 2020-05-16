@@ -73,12 +73,14 @@ On Python `imageio.plugins.freeimage.download()` or on command line `imageio_dow
 ### Output:
 * For multi-frame datasets:
 
-`<my_var> = (<First frame of interest>, <Last frame of interest>, <X1>, <Y1>, <X2>, <Y2>)`
+`<my_var> = (<First frame of interest>, <Last frame of interest>, <X1>, <Y1>, <X2>, <Y2>, <haserror>)`
 
 * For single-frame images:
 
-`<my_var> = (<X1>, <Y1>, <X2>, <Y2>)`
+`<my_var> = (<X1>, <Y1>, <X2>, <Y2>, <haserror>)`
 
 * If `ROIshape = 0`: `(<X1>, <Y1>, <X2>, <Y2>)` are the coordinates of the ROI rectangle; else if `ROIshape = 1`: they are the coordinates of the bounding box of the ROI circle. If ROI not chosen, `None` is returned.
 
 * `<First frame of interest>` and `<Last frame of interest>` (int), if chosen, are the indices of the frames of interest to be analysed, else `None` is returned.
+
+* `<haserror>` (True or False) returns whether the execution of ROI_Frames_Selector file resulted in any errors. This is useful for managing and handling errors when called from a different Python file.

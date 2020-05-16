@@ -31,7 +31,7 @@ class VideoBrowser:
         if int(ROIshape) != 0 and int(ROIshape) != 1:
             self.window.destroy()
             self.haserror = True
-            raise ValueError("ROIshape must be 0 for rectangle and 1 for circle")
+            raise ValueError("\n\nROIshape must be 0 for rectangle and 1 for circle. \n")
         else:
             self.ROIshape = int(ROIshape)
         self.window.title("UCL EIL - ROI and Frames Selector. Built by Anand Pallipurath.")
@@ -95,12 +95,12 @@ class VideoBrowser:
                 self.mycanvas.destroy()
                 self.window.destroy()
                 self.haserror = True
-                raise FileNotFoundError("No suitable single-frame images found in the folder.")
+                raise FileNotFoundError("\n\nNo suitable single-frame images found in the folder. \n")
         else:
             self.mycanvas.destroy()
             self.window.destroy()
             self.haserror = True
-            raise RuntimeError("Unknown OS error. File or Directory may be corrupted or non-existent, and couldn't be opened")
+            raise RuntimeError("\n\nUnknown OS error. File or Directory may be corrupted or non-existent, and couldn't be opened. \n")
 
         # Store the original aspect ratio to rescale the dataset (i.e. High-Res images will not fit the screen otherwise)
         self.original_height = len(self.frame[0])
@@ -149,7 +149,7 @@ class VideoBrowser:
     def onclosingwindow(self):
         self.window.destroy()
         self.haserror = True
-        raise RuntimeError ("Window closed during selection.")
+        raise RuntimeError ("\n\nWindow closed during selection. \n")
         
     def sorted_alphanumeric(self, data):
         convert = lambda text: int(text) if text.isdigit() else text.lower()
@@ -440,7 +440,7 @@ class FileSelector:
     
     def onclosingroot(self):
         self.root.destroy()
-        raise RuntimeError ("Window closed during selection.")
+        raise RuntimeError ("\n\nWindow closed during selection. \n")
     
     def opt1_select(self):
         self.root.withdraw()

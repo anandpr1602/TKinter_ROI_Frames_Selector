@@ -34,7 +34,7 @@ class VideoBrowser:
             raise ValueError("\n\nROIshape must be 0 for rectangle and 1 for circle. \n")
         else:
             self.ROIshape = int(ROIshape)
-        self.window.title("UCL EIL - ROI and Frames Selector. Built by Anand Pallipurath.")
+        self.window.title(self.multimedia)
         self.resolution = 800 # Giving a decent resolution to resize large images to fit a screen
         self.delay = 16 # set the delay in milliseconds to refresh the Tkinter window.
         # Create an empty canvas. This creates a separate Tkinter.Tk() object. 'highlightthickness' = 0 is important when dealing with extracting XY coordinates of images through mouse events.

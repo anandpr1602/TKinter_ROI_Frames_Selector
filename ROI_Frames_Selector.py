@@ -35,7 +35,7 @@ class VideoBrowser:
         else:
             self.ROIshape = int(ROIshape)
         self.window.title(self.multimedia)
-        self.resolution = 800 # Giving a decent resolution to resize large images to fit a screen
+        self.resolution = 600 # Giving a decent resolution to resize large images to fit a screen
         self.delay = 16 # set the delay in milliseconds to refresh the Tkinter window.
         # Create an empty canvas. This creates a separate Tkinter.Tk() object. 'highlightthickness' = 0 is important when dealing with extracting XY coordinates of images through mouse events.
         # Without highlightthickness, canvas is larger than the image --> leading to mouse picking out of bounds XY coordinates.
@@ -174,7 +174,7 @@ class VideoBrowser:
             self.mycanvas = tkinter.Canvas(self.window, width = self.photo.width(), height = self.photo.height(), highlightthickness=0)
         else:
             self.resize = True
-            self.photo = PIL.ImageTk.PhotoImage(image = (PIL.Image.fromarray(self.frame)).resize((int(np.round(self.photo.width()*self.resolution/self.original_height)), self.resolution)), master=self.mycanvas)
+            self.photo = PIL.ImageTk.PhotoImage(image = (PIL.Image.fromarray(self.frame)).resize((int(np.round(self.original_height*self.resolution/self.original_width)), int(np.round(self.original_width*self.resolution/self.original_height)))), master=self.mycanvas)
             self.mycanvas = tkinter.Canvas(self.window, width = self.photo.width(), height = self.photo.height(), highlightthickness=0)
         # Post the photo onto the canvas and NOT the window. Create a tag for the photo on the canvas to later handle mouse events occurring ONLY on the photo and not on other objects drawn on mycanvas (e.g. the ROI rectangle or Circle)
         self.mycanvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW, tags="mypic")

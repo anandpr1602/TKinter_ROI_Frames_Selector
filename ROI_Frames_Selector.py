@@ -35,7 +35,7 @@ class VideoBrowser:
         else:
             self.ROIshape = int(ROIshape)
         self.window.title(self.multimedia)
-        self.resolution = 600 # Giving a decent resolution to resize large images to fit a screen
+        self.resolution = 800 # Giving a decent resolution to resize large images to fit a screen
         self.delay = 16 # set the delay in milliseconds to refresh the Tkinter window.
         # Create an empty canvas. This creates a separate Tkinter.Tk() object. 'highlightthickness' = 0 is important when dealing with extracting XY coordinates of images through mouse events.
         # Without highlightthickness, canvas is larger than the image --> leading to mouse picking out of bounds XY coordinates.
@@ -77,6 +77,9 @@ class VideoBrowser:
             # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
             if self.frame.dtype == "uint16":
                 self.frame = util.img_as_ubyte(self.frame)
+            elif self.frame.dtype == "float32":
+                self.frame = (((self.frame - self.frame.min())/self.frame.max())*255.0).astype(np.uint8)
+
 
         elif os.path.isdir(multimedia) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
             for file in os.listdir(multimedia):
@@ -91,6 +94,9 @@ class VideoBrowser:
                 self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
                 if self.frame.dtype == "uint16":
                     self.frame = util.img_as_ubyte(self.frame)
+                elif self.frame.dtype == "float32":
+                    self.frame = (((self.frame - self.frame.min())/self.frame.max())*255.0).astype(np.uint8)
+
             else:
                 self.mycanvas.destroy()
                 self.window.destroy()
@@ -166,6 +172,8 @@ class VideoBrowser:
         # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
         if self.frame.dtype == "uint16":
             self.frame = util.img_as_ubyte(self.frame)
+        elif self.frame.dtype == "float32":
+            self.frame = (((self.frame - self.frame.min())/self.frame.max())*255.0).astype(np.uint8)
 
         # Convert image array into TKinter compatible image. master=self.mycanvas tells Tkinter to make the photo available to mycanvas and NOT the window (which is a separate Tkinter.Tk() instance)
         self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame), master=self.mycanvas) 

@@ -8,6 +8,8 @@ import os, re
 import configparser
 import numpy as np
 import skimage.util as util
+import skimage.exposure as exposure
+import skimage.transform as transform
 import tkinter
 import tkinter.font as font
 import tkinter.filedialog as filedialog
@@ -35,8 +37,8 @@ class VideoBrowser:
         else:
             self.ROIshape = int(ROIshape)
         self.window.title(self.multimedia)
-        self.resolution = 800 # Giving a decent resolution to resize large images to fit a screen
-        self.delay = 16 # set the delay in milliseconds to refresh the Tkinter window.
+        self.resolution = 500 # Giving a decent resolution to resize large images to fit a screen
+        self.delay = 100 # set the delay in milliseconds to refresh the Tkinter window.
         # Create an empty canvas. This creates a separate Tkinter.Tk() object. 'highlightthickness' = 0 is important when dealing with extracting XY coordinates of images through mouse events.
         # Without highlightthickness, canvas is larger than the image --> leading to mouse picking out of bounds XY coordinates.
         self.mycanvas = tkinter.Canvas(self.window, width = self.resolution, height = self.resolution, highlightthickness=0)         
@@ -75,12 +77,10 @@ class VideoBrowser:
             self.frame = self.image_set.get_data(self.index) #get_data opens each frame as an image array
             
             # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
-            if self.frame.dtype == "uint16":
+            self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255))
+            if self.frame.dtype != "uint8" or self.frame.dtype != "int8":
                 self.frame = util.img_as_ubyte(self.frame)
-            elif self.frame.dtype == "float32":
-                self.frame = (((self.frame - self.frame.min())/self.frame.max())*255.0).astype(np.uint8)
-
-
+            
         elif os.path.isdir(multimedia) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
             for file in os.listdir(multimedia):
                 self.file_extension = (os.path.splitext(file)[1])
@@ -92,11 +92,9 @@ class VideoBrowser:
                 self.filelist = self.sorted_alphanumeric(self.filelist)
                 self.number_frames = len(self.filelist)
                 self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
-                if self.frame.dtype == "uint16":
+                self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255))
+                if self.frame.dtype != "uint8" or self.frame.dtype != "int8":
                     self.frame = util.img_as_ubyte(self.frame)
-                elif self.frame.dtype == "float32":
-                    self.frame = (((self.frame - self.frame.min())/self.frame.max())*255.0).astype(np.uint8)
-
             else:
                 self.mycanvas.destroy()
                 self.window.destroy()
@@ -111,7 +109,8 @@ class VideoBrowser:
         # Store the original aspect ratio to rescale the dataset (i.e. High-Res images will not fit the screen otherwise)
         self.original_height = len(self.frame[0])
         self.original_width = len(self.frame)
-        
+        self.scale_factor = self.resolution/self.original_width
+        #self.frame = util.img_as_ubyte(transform.rescale(self.frame, self.scale_factor, anti_aliasing=True))
         self.update_canvas()
         
         # Create a box to show the XY cordinates of the mouse
@@ -136,6 +135,7 @@ class VideoBrowser:
             else:
                 self.sliderlength = 30
             self.scrrect = tkinter.Scale(self.window, from_= 1, to = self.number_frames, orient = "horizontal", length = self.photo.width(), sliderlength = self.sliderlength, command = self.scrollrect)
+            self.scrrect.bind("<ButtonRelease-1>", self.scrollrect1)
             self.scrrect.grid(row = 2, column = 0, columnspan = 3)
             
             self.firstframe_button = tkinter.Button(self.window, text="Select First Frame", width=30, command= self.firstframe, state = "active")
@@ -170,20 +170,17 @@ class VideoBrowser:
             self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
 
         # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
-        if self.frame.dtype == "uint16":
+        self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255))
+        if self.frame.dtype != "uint8" or self.frame.dtype != "int8":
             self.frame = util.img_as_ubyte(self.frame)
-        elif self.frame.dtype == "float32":
-            self.frame = (((self.frame - self.frame.min())/self.frame.max())*255.0).astype(np.uint8)
-
+        
+        # Resize the photo if needed
+        if self.scale_factor < 1:
+            self.resize = True
+            self.frame = exposure.rescale_intensity(transform.rescale(self.frame, self.scale_factor, multichannel=True, anti_aliasing=True), out_range=(0, 255)).astype('uint8')
         # Convert image array into TKinter compatible image. master=self.mycanvas tells Tkinter to make the photo available to mycanvas and NOT the window (which is a separate Tkinter.Tk() instance)
         self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame), master=self.mycanvas) 
-        # Resize the photo if needed
-        if self.photo.width() < self.resolution or self.photo.height() < self.resolution:
-            self.mycanvas = tkinter.Canvas(self.window, width = self.photo.width(), height = self.photo.height(), highlightthickness=0)
-        else:
-            self.resize = True
-            self.photo = PIL.ImageTk.PhotoImage(image = (PIL.Image.fromarray(self.frame)).resize((int(np.round(self.original_height*self.resolution/self.original_width)), int(np.round(self.original_width*self.resolution/self.original_height)))), master=self.mycanvas)
-            self.mycanvas = tkinter.Canvas(self.window, width = self.photo.width(), height = self.photo.height(), highlightthickness=0)
+        self.mycanvas = tkinter.Canvas(self.window, width = self.photo.width(), height = self.photo.height(), highlightthickness=0)
         # Post the photo onto the canvas and NOT the window. Create a tag for the photo on the canvas to later handle mouse events occurring ONLY on the photo and not on other objects drawn on mycanvas (e.g. the ROI rectangle or Circle)
         self.mycanvas.create_image(0, 0, image = self.photo, anchor = tkinter.NW, tags="mypic")
         self.mycanvas.config(scrollregion=self.mycanvas.bbox('mypic'))
@@ -256,13 +253,14 @@ class VideoBrowser:
             
     def scrollrect(self, val):
         self.index = int(val)-1
-        self.scrrect.grid(row = 2, column = 0, columnspan = 3)
+        #self.scrrect.grid(row = 2, column = 0, columnspan = 3)
+    def scrollrect1(self, evnt):
         self.update_myframe()
         self.update_canvas()
         self.update_forward()
         self.update_backward()
         self.mycanvas.bind('<Motion>', self.motion)
-   
+    
     def firstframe(self):
         self.first_frame = self.index
         self.firstframe_button.grid_forget()
@@ -329,7 +327,7 @@ class VideoBrowser:
         if self.resize == False:
             self.myxy = tkinter.Label(self.window, text = "XY coordinates: " + str(self.x) + ", " + str(self.y))
         else:
-            self.myxy = tkinter.Label(self.window, text = "XY coordinates: " + str(np.round(self.x*self.original_height/self.resolution)) + ", " + str(np.round(self.y*self.original_height/self.resolution)))
+            self.myxy = tkinter.Label(self.window, text = "XY coordinates: " + str(np.round(self.x/self.scale_factor)) + ", " + str(np.round(self.y/self.scale_factor)))
         self.myxy.grid(row = 0, column = 2, columnspan = 1)
     
     # Create a rectangle or a circle on left-mouse click ONLY if there are no other rectangles or circles already present.
@@ -350,16 +348,28 @@ class VideoBrowser:
             self.curY = event2.y
             # expand rectangle/circle as you drag the mouse
             self.mycanvas.coords(self.rect, self.start_x, self.start_y, self.curX, self.curY)
+            if self.resize == False:
+                self.myxy = tkinter.Label(self.window, text = "XY coordinates: " + str(self.curX) + ", " + str(self.curY))
+            else:
+                self.myxy = tkinter.Label(self.window, text = "XY coordinates: " + str(np.round(self.curX/self.scale_factor)) + ", " + str(np.round(self.curY/self.scale_factor)))
+            self.myxy.grid(row = 0, column = 2, columnspan = 1)
 
     def on_button_release(self, event3):
         self.myROI_button.grid_forget()
         self.update_ROI()        
     
     def results(self):
-        if self.number_frames > 1:
-            return (self.first_frame, self.last_frame, self.start_x, self.start_y, self.curX, self.curY, self.haserror)
+        if self.start_x != None and self.start_y != None and self.curX != None and self.curY != None:
+            if self.number_frames > 1:
+                return (self.first_frame, self.last_frame, np.minimum(self.start_x, self.curX), np.minimum(self.start_y, self.curY), np.maximum(self.start_x, self.curX), np.maximum(self.start_y, self.curY), self.haserror)
+            else:
+                return (np.minimum(self.start_x, self.curX), np.minimum(self.start_y, self.curY), np.maximum(self.start_x, self.curX), np.maximum(self.start_y, self.curY), self.haserror)
         else:
-            return (self.start_x, self.start_y, self.curX, self.curY, self.haserror)
+            if self.number_frames > 1:
+                return (self.first_frame, self.last_frame, self.start_x, self.start_y, self.curX, self.curY, self.haserror)
+            else:
+                return (self.start_x, self.start_y, self.curX, self.curY, self.haserror)
+            
     
     def continue_program(self):
         if self.number_frames > 1:
@@ -390,15 +400,14 @@ class VideoBrowser:
                 self.curY = self.photo.height()
             
             if self.resize == True:
-                self.start_x = int(np.round(self.start_x*self.original_height/self.resolution))
-                self.start_y = int(np.round(self.start_y*self.original_height/self.resolution))
-                self.curX = int(np.round(self.curX*self.original_height/self.resolution))
-                self.curY = int(np.round(self.curY*self.original_height/self.resolution))
-                print("Image rescaled to fit screen. Rounding error of pixel coordinates possible!")
+                self.start_x = int(np.round(self.start_x/self.scale_factor))
+                self.start_y = int(np.round(self.start_y/self.scale_factor))
+                self.curX = int(np.round(self.curX/self.scale_factor))
+                self.curY = int(np.round(self.curY/self.scale_factor))
             if self.ROIshape == 0:
-                print("ROI Rectangle ( X1, Y1, X2, Y2 ): (", self.start_x, ",", self.start_y, ",", self.curX, ",", self.curY, ")")
+                print("ROI Rectangle ( X1, Y1, X2, Y2 ): (", np.minimum(self.start_x, self.curX), ",", np.minimum(self.start_y, self.curY), ",", np.maximum(self.start_x, self.curX), ",", np.maximum(self.start_y, self.curY), ")")
             else:
-                print("ROI Circle Bounding Box ( X1, Y1, X2, Y2 ): (", self.start_x, ",", self.start_y, ",", self.curX, ",", self.curY, ")")
+                print("ROI Circle Bounding Box ( X1, Y1, X2, Y2 ): (", np.minimum(self.start_x, self.curX), ",", np.minimum(self.start_y, self.curY), ",", np.maximum(self.start_x, self.curX), ",", np.maximum(self.start_y, self.curY), ")")
         else:
             print("ROI not selected. 'None' type will be returned!")
         print()

@@ -77,9 +77,7 @@ class VideoBrowser:
             self.frame = self.image_set.get_data(self.index) #get_data opens each frame as an image array
             
             # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
-            self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255))
-            if self.frame.dtype != "uint8" or self.frame.dtype != "int8":
-                self.frame = util.img_as_ubyte(self.frame)
+            self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255)).astype('uint8')
             
         elif os.path.isdir(multimedia) == True: # Else if a directory of image sequence is selected: use the imageio.imread() option to open frames.
             for file in os.listdir(multimedia):
@@ -92,9 +90,7 @@ class VideoBrowser:
                 self.filelist = self.sorted_alphanumeric(self.filelist)
                 self.number_frames = len(self.filelist)
                 self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
-                self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255))
-                if self.frame.dtype != "uint8" or self.frame.dtype != "int8":
-                    self.frame = util.img_as_ubyte(self.frame)
+                self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255)).astype('uint8')
             else:
                 self.mycanvas.destroy()
                 self.window.destroy()
@@ -109,8 +105,7 @@ class VideoBrowser:
         # Store the original aspect ratio to rescale the dataset (i.e. High-Res images will not fit the screen otherwise)
         self.original_height = len(self.frame[0])
         self.original_width = len(self.frame)
-        self.scale_factor = self.resolution/self.original_width
-        #self.frame = util.img_as_ubyte(transform.rescale(self.frame, self.scale_factor, anti_aliasing=True))
+        self.scale_factor = np.round(self.resolution/self.original_width, 2)
         self.update_canvas()
         
         # Create a box to show the XY cordinates of the mouse
@@ -170,14 +165,12 @@ class VideoBrowser:
             self.frame = imageio.imread(self.filelist[self.index]) #open each image from directory
 
         # Downscale 16-bit images to 8-bit, as PIL.Image cannot open/handle 16-bit images.
-        self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255))
-        if self.frame.dtype != "uint8" or self.frame.dtype != "int8":
-            self.frame = util.img_as_ubyte(self.frame)
+        self.frame = exposure.rescale_intensity(self.frame, out_range=(0, 255)).astype('uint8')
         
         # Resize the photo if needed
         if self.scale_factor < 1:
             self.resize = True
-            self.frame = exposure.rescale_intensity(transform.rescale(self.frame, self.scale_factor, multichannel=True, anti_aliasing=True), out_range=(0, 255)).astype('uint8')
+            self.frame = exposure.rescale_intensity(transform.rescale(self.frame, self.scale_factor), out_range=(0, 255)).astype('uint8')
         # Convert image array into TKinter compatible image. master=self.mycanvas tells Tkinter to make the photo available to mycanvas and NOT the window (which is a separate Tkinter.Tk() instance)
         self.photo = PIL.ImageTk.PhotoImage(image = PIL.Image.fromarray(self.frame), master=self.mycanvas) 
         self.mycanvas = tkinter.Canvas(self.window, width = self.photo.width(), height = self.photo.height(), highlightthickness=0)
@@ -478,10 +471,13 @@ class FileSelector:
             print("No folder selected.")
     
     def callvideobrowser(self):
-        if os.path.isfile(self.filename):
-            self.myresults = VideoBrowser(tkinter.Tk(), self.filename, self.roishape.get()).results()
-        elif os.path.isdir(self.filename):
-            self.myresults = VideoBrowser(tkinter.Tk(), self.filename+"/", self.roishape.get()).results()  
+        try:
+            if os.path.isfile(self.filename):
+                self.myresults = VideoBrowser(tkinter.Tk(), self.filename, self.roishape.get()).results()
+            elif os.path.isdir(self.filename):
+                self.myresults = VideoBrowser(tkinter.Tk(), self.filename+"/", self.roishape.get()).results()  
+        except:
+            self.myresults[-1] = True
     
     def results(self):
         return self.myresults
